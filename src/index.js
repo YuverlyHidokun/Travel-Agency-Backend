@@ -1,15 +1,13 @@
-const dotenv = require("dotenv");
-const connectDB = require("./database");
-const server = require("./server");
+import dotenv from 'dotenv';
+import app from './server.js';
+import connection from './database.js';
 
-// Configuración de variables de entorno
+
 dotenv.config();
 
-// Conectar base de datos
-connectDB();
 
-// Iniciar servidor
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`🚀 Servidor escuchando en el puerto ${PORT}`);
+connection();
+
+app.listen(app.get('port'), () => {
+  console.log(`✅ Server ok on http://localhost:${app.get('port')}`);
 });

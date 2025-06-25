@@ -1,5 +1,5 @@
 import Usuario from "../models/User.js";
-import { sendMailToVerifyMovilUser } from "../config/nodemailer.js";
+import { sendMailToRegister, sendMailToRecoveryPassword } from "../config/nodemailer.js";
 
 const registro = async (req, res) => {
   const { nombre, apellido, numero, email, password, acepta_terminos } = req.body;
@@ -17,19 +17,21 @@ const registro = async (req, res) => {
     return res.status(400).json({ msg: "Este email ya está registrado" });
   }
 
-  const nuevoUsuario = new Usuario({
-    nombre,
-    apellido,
-    numero,
-    email,
-    password,
-    token: Usuario.prototype.generarToken()
+    const nuevoUsuario = new Usuario({
+      nombre,
+      apellido,
+      numero,
+      email,
+      password
   });
+
+  const tokenGenerado = nuevoUsuario.generarToken();
+  nuevoUsuario.token = tokenGenerado;
 
   nuevoUsuario.password = await nuevoUsuario.encrypPassword(password);
   await nuevoUsuario.save();
 
-  await sendMailToVerifyMovilUser(email, nuevoUsuario.token);
+  await sendMailToRegister(email, nuevoUsuario.token);
 
   res.status(201).json({
     msg: "Cuenta creada. Verifica tu correo electrónico.",
@@ -68,43 +70,63 @@ const login = async (req, res) => {
 };
 
 const verificarCuenta = async (req, res) => {
-  const { id_usuario, token } = req.body;
+  const { token } = req.params;
 
-  const usuario = await Usuario.findById(id_usuario);
-  if (!usuario) return res.status(404).json({ msg: "Usuario no encontrado" });
+  const usuario = await Usuario.findOne({ token });
 
-  if (usuario.token !== token) {
-    return res.status(400).json({ msg: "Token incorrecto, verifica tu correo" });
+  if (!usuario) {
+    return res.status(404).json({ msg: "Token inválido o expirado" });
   }
 
   usuario.confirmEmail = true;
   usuario.token = null;
   await usuario.save();
 
-  res.status(200).json({ msg: "Cuenta verificada correctamente" });
+  res.status(200).json({ msg: "Cuenta verificada correctamente. Ya puedes iniciar sesión." });
 };
 
 // Recuperar contraseña por olvido
-const olvidoPassword = async (req, res) => {
-  const { email, nuevopassword, confirmarpassword } = req.body;
+const recuperarPassword = async (req, res) => {
+  const { email } = req.body;
+  if (Object.values(req.body).includes("")) return res.status(404).json({ msg: "Lo sentimos, debes llenar todos los campos" });
 
-  if (!email || !nuevopassword || !confirmarpassword) {
-    return res.status(400).json({ msg: "Todos los campos son obligatorios" });
-  }
+  const propietarioBDD = await Usuario.findOne({ email });
+  if (!propietarioBDD) return res.status(404).json({ msg: "Lo sentimos, el email no se encuentra registrado" });
 
-  const usuario = await Usuario.findOne({ email });
-  if (!usuario) {
-    return res.status(404).json({ msg: `No existe un usuario con el correo ${email}` });
-  }
+  const token = propietarioBDD.generarToken();
+  propietarioBDD.token = token;
+  await propietarioBDD.save();
 
-  if (nuevopassword !== confirmarpassword) {
-    return res.status(400).json({ msg: "Las contraseñas no coinciden" });
-  }
+  await sendMailToRecoveryPassword(email, token);
 
-  usuario.password = await usuario.encrypPassword(nuevopassword);
-  await usuario.save();
+  res.status(200).json({ msg: "Revisa tu correo electrónico para recuperar tu contraseña" });
+};
 
-  res.status(200).json({ msg: "Contraseña actualizada correctamente" });
+const comprobarTokenPasword = async (req, res) => {
+  const { token } = req.params;
+  if (!token) return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
+
+  const propietarioBDD = await Usuario.findOne({ token });
+  if (!propietarioBDD || propietarioBDD.token !== token) return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
+
+  res.status(200).json({ msg: "Hemos verificado tu correo, por favor rellena los campos para tu nueva contraseña" });
+};
+
+const nuevoPassword = async (req, res) => {
+  const { password, confirmpassword } = req.body;
+  const { token } = req.params;
+
+  if (Object.values(req.body).includes("")) return res.status(404).json({ msg: "Lo sentimos, debes llenar todos los campos" });
+  if (password !== confirmpassword) return res.status(404).json({ msg: "Lo sentimos, las contraseñas no coinciden" });
+
+  const propietarioBDD = await Usuario.findOne({ token });
+  if (!propietarioBDD || propietarioBDD.token !== token) return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
+
+  propietarioBDD.token = null;
+  propietarioBDD.password = await propietarioBDD.encrypPassword(password);
+  await propietarioBDD.save();
+
+  res.status(200).json({ msg: "Felicitaciones, ya puedes iniciar sesión con tu nueva contraseña" });
 };
 
 // Actualizar contraseña desde perfil
@@ -130,6 +152,8 @@ export {
   registro,
   login,
   verificarCuenta,
-  olvidoPassword,
-  actualizarPassword,
+  recuperarPassword,
+  comprobarTokenPasword,
+  nuevoPassword,
+  actualizarPassword
 };

@@ -1,6 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-import usuarioRoutes from "./routes/user_routes.js";
+import express from "express"
+import cors from 'cors';
+
+import userRoutes from "./routes/user_routes.js";
 
 const app = express();
 
@@ -8,11 +9,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.set('port', process.env.PORT || 3000);
+
 // Ruta raíz
 app.get("/", (req, res) => {
   res.send("🌎 API Travel Agency funcionando");
 });
 
-app.use("/travel/usuarios", usuarioRoutes);
+app.use("/travel/usuarios", userRoutes);
+app.use((req, res) => res.status(404).send('🚫 Endpoint no encontrado - 404'));
 
-module.exports = app;
+export default app;
