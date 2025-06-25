@@ -1,19 +1,52 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, model } from "mongoose";
 
-const packageSchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  images: [String], // URLs en Cloudinary
-  price: Number,
-  location: String,
-  rating: { type: Number, default: 0 },
+const packageSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  images: [
+    {
+      type: String,
+      required: true
+    }
+  ], // URLs en Cloudinary
+  price: {
+    type: Number,
+    required: true
+  },
+  location: {
+    type: String,
+    required: true
+  },
+  rating: {
+    type: Number,
+    default: 0
+  },
   reviews: [
     {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      comment: String,
-      rating: Number,
-    },
-  ],
-}, { timestamps: true });
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Usuario",
+        required: true
+      },
+      comment: {
+        type: String,
+        required: true
+      },
+      rating: {
+        type: Number,
+        required: true
+      }
+    }
+  ]
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model("Package", packageSchema);
+export default model("Paquete", packageSchema);
