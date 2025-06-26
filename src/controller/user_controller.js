@@ -1,5 +1,7 @@
 import Usuario from "../models/User.js";
 import { sendMailToRegister, sendMailToRecoveryPassword } from "../config/nodemailer.js";
+import generarJWT from "../utils/generateToken.js";
+
 
 const registro = async (req, res) => {
   const { nombre, apellido, numero, email, password, acepta_terminos } = req.body;
@@ -61,13 +63,17 @@ const login = async (req, res) => {
     return res.status(403).json({ msg: "Debes confirmar tu cuenta antes de iniciar sesión" });
   }
 
+  const token = generarJWT(usuarioBDD._id); // <- Este es el token que necesitas
+
   res.status(200).json({
     id: usuarioBDD._id,
     nombre: usuarioBDD.nombre,
     email: usuarioBDD.email,
-    rol: usuarioBDD.rol
+    rol: usuarioBDD.rol,
+    token  // ← JWT válido
   });
 };
+
 
 const verificarCuenta = async (req, res) => {
   const { token } = req.params;

@@ -2,13 +2,16 @@ import Paquete from "../models/Package.js";
 
 // Crear un nuevo paquete turístico
 const crearPaquete = async (req, res) => {
-  const { nombre, descripcion, imagenes, precio, ubicacion } = req.body;
-
-  if ([nombre, descripcion, imagenes, precio, ubicacion].includes("") || imagenes.length === 0) {
-    return res.status(400).json({ msg: "Todos los campos son obligatorios y al menos una imagen debe ser cargada." });
-  }
-
   try {
+    // req.files contiene la info subida con multer-storage-cloudinary
+    const imagenes = req.files.map(file => file.path); // URLs Cloudinary
+
+    const { nombre, descripcion, precio, ubicacion } = req.body;
+
+    if ([nombre, descripcion, precio, ubicacion].includes("") || imagenes.length === 0) {
+      return res.status(400).json({ msg: "Todos los campos son obligatorios y al menos una imagen debe ser cargada." });
+    }
+
     const nuevoPaquete = new Paquete({
       nombre,
       descripcion,
@@ -23,10 +26,13 @@ const crearPaquete = async (req, res) => {
       msg: "Paquete creado correctamente",
       paquete: nuevoPaquete
     });
+
   } catch (error) {
+    console.log(error);
     res.status(500).json({ msg: "Error al crear el paquete", error });
   }
 };
+
 
 // Obtener todos los paquetes
 const obtenerPaquetes = async (req, res) => {
@@ -101,10 +107,14 @@ const eliminarPaquete = async (req, res) => {
 };
 
 // Agregar una reseña a un paquete
+
+
 const agregarReseña = async (req, res) => {
+  // res.json({ msg: "Ruta de reseñas encontrada correctamente" }); // ❌ QUITA ESTO
+
   const { id } = req.params;
   const { comentario, calificacion } = req.body;
-  const usuario = req.usuario?._id; // Suponiendo que `req.usuario` viene del middleware de autenticación
+  const usuario = req.usuario?._id;
 
   if (!usuario || !comentario || !calificacion) {
     return res.status(400).json({ msg: "Todos los campos son obligatorios para la reseña." });
@@ -118,17 +128,19 @@ const agregarReseña = async (req, res) => {
 
     paquete.reseñas.push({ usuario, comentario, calificacion });
 
-    // Calcular el nuevo promedio
+    // Calcular nuevo promedio
     const total = paquete.reseñas.reduce((acc, item) => acc + item.calificacion, 0);
     paquete.calificacion = total / paquete.reseñas.length;
 
     await paquete.save();
 
-    res.status(201).json({ msg: "Reseña agregada correctamente", paquete });
+    return res.status(201).json({ msg: "Reseña agregada correctamente", paquete });
   } catch (error) {
-    res.status(500).json({ msg: "Error al agregar la reseña", error });
+    console.error(error);
+    return res.status(500).json({ msg: "Error al agregar la reseña", error });
   }
 };
+
 
 export {
   crearPaquete,

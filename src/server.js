@@ -4,6 +4,9 @@ import cors from "cors";
 import userRoutes from "./routes/user_routes.js";
 import paqueteRoutes from "./routes/package_routes.js";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 const app = express();
 
 // Middlewares
