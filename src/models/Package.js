@@ -1,45 +1,45 @@
 import mongoose, { Schema, model } from "mongoose";
 
 const packageSchema = new Schema({
-  name: {
+  nombre: {
     type: String,
     required: true,
     trim: true
   },
-  description: {
+  descripcion: {
     type: String,
-    required: true
+    required: true // Puedes agregar maxlength si deseas limitarlo, o dejarlo libre para "texto largo"
   },
-  images: [
+  imagenes: [
     {
       type: String,
       required: true
     }
   ], // URLs en Cloudinary
-  price: {
+  precio: {
     type: Number,
     required: true
   },
-  location: {
+  ubicacion: {
     type: String,
     required: true
   },
-  rating: {
+  calificacion: {
     type: Number,
     default: 0
   },
-  reviews: [
+  reseñas: [
     {
-      user: {
+      usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Usuario",
         required: true
       },
-      comment: {
+      comentario: {
         type: String,
         required: true
       },
-      rating: {
+      calificacion: {
         type: Number,
         required: true
       }

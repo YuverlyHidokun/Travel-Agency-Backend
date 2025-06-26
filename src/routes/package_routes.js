@@ -8,24 +8,23 @@ import {
   agregarReseña
 } from "../controller/package_controller.js";
 
+import verificarAuth from "../middlewares/authMiddleware.js"; // asegúrate de que sea un export ES module
+
 const router = express.Router();
 
-// Crear nuevo paquete
-router.post("/", crearPaquete);
-
-// Obtener todos los paquetes
 router.get("/", obtenerPaquetes);
 
-// Obtener un paquete específico por ID
 router.get("/:id", obtenerPaquetePorId);
 
-// Actualizar un paquete por ID
-router.put("/:id", actualizarPaquete);
+router.post("/", verificarAuth, crearPaquete);
 
-// Eliminar un paquete por ID
-router.delete("/:id", eliminarPaquete);
+// Actualizar un paquete por ID (protegido)
+router.put("/:id", verificarAuth, actualizarPaquete);
 
-// Agregar reseña a un paquete por ID
-router.post("/:id/reviews", agregarReseña);
+// Eliminar un paquete por ID (protegido)
+router.delete("/:id", verificarAuth, eliminarPaquete);
+
+// Agregar reseña a un paquete por ID (protegido)
+router.post("/:id/reseñas", verificarAuth, agregarReseña);
 
 export default router;

@@ -2,19 +2,19 @@ import Paquete from "../models/Package.js";
 
 // Crear un nuevo paquete turístico
 const crearPaquete = async (req, res) => {
-  const { name, description, images, price, location } = req.body;
+  const { nombre, descripcion, imagenes, precio, ubicacion } = req.body;
 
-  if ([name, description, images, price, location].includes("") || images.length === 0) {
+  if ([nombre, descripcion, imagenes, precio, ubicacion].includes("") || imagenes.length === 0) {
     return res.status(400).json({ msg: "Todos los campos son obligatorios y al menos una imagen debe ser cargada." });
   }
 
   try {
     const nuevoPaquete = new Paquete({
-      name,
-      description,
-      images,
-      price,
-      location
+      nombre,
+      descripcion,
+      imagenes,
+      precio,
+      ubicacion
     });
 
     await nuevoPaquete.save();
@@ -43,7 +43,7 @@ const obtenerPaquetePorId = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const paquete = await Paquete.findById(id).populate("reviews.user", "nombre email");
+    const paquete = await Paquete.findById(id).populate("reseñas.usuario", "nombre email");
 
     if (!paquete) {
       return res.status(404).json({ msg: "Paquete no encontrado" });
@@ -58,7 +58,7 @@ const obtenerPaquetePorId = async (req, res) => {
 // Actualizar un paquete
 const actualizarPaquete = async (req, res) => {
   const { id } = req.params;
-  const { name, description, images, price, location } = req.body;
+  const { nombre, descripcion, imagenes, precio, ubicacion } = req.body;
 
   try {
     const paquete = await Paquete.findById(id);
@@ -66,11 +66,11 @@ const actualizarPaquete = async (req, res) => {
       return res.status(404).json({ msg: "Paquete no encontrado" });
     }
 
-    paquete.name = name || paquete.name;
-    paquete.description = description || paquete.description;
-    paquete.images = images || paquete.images;
-    paquete.price = price || paquete.price;
-    paquete.location = location || paquete.location;
+    paquete.nombre = nombre || paquete.nombre;
+    paquete.descripcion = descripcion || paquete.descripcion;
+    paquete.imagenes = imagenes || paquete.imagenes;
+    paquete.precio = precio || paquete.precio;
+    paquete.ubicacion = ubicacion || paquete.ubicacion;
 
     await paquete.save();
 
@@ -103,9 +103,10 @@ const eliminarPaquete = async (req, res) => {
 // Agregar una reseña a un paquete
 const agregarReseña = async (req, res) => {
   const { id } = req.params;
-  const { user, comment, rating } = req.body;
+  const { comentario, calificacion } = req.body;
+  const usuario = req.usuario?._id; // Suponiendo que `req.usuario` viene del middleware de autenticación
 
-  if (!user || !comment || !rating) {
+  if (!usuario || !comentario || !calificacion) {
     return res.status(400).json({ msg: "Todos los campos son obligatorios para la reseña." });
   }
 
@@ -115,11 +116,11 @@ const agregarReseña = async (req, res) => {
       return res.status(404).json({ msg: "Paquete no encontrado" });
     }
 
-    paquete.reviews.push({ user, comment, rating });
+    paquete.reseñas.push({ usuario, comentario, calificacion });
 
     // Calcular el nuevo promedio
-    const total = paquete.reviews.reduce((acc, item) => acc + item.rating, 0);
-    paquete.rating = total / paquete.reviews.length;
+    const total = paquete.reseñas.reduce((acc, item) => acc + item.calificacion, 0);
+    paquete.calificacion = total / paquete.reseñas.length;
 
     await paquete.save();
 
