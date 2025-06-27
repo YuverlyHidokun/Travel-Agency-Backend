@@ -1,5 +1,5 @@
-import Reserva from "../models/Reserva.js";
-import Paquete from "../models/Paquete.js";
+import Reserva from "../models/Reservation.js";
+import Paquete from "../models/Package.js";
 
 // Crear una nueva reserva
 const crearReserva = async (req, res) => {

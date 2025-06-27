@@ -3,8 +3,7 @@ import Paquete from "../models/Package.js";
 // Crear un nuevo paquete turístico
 const crearPaquete = async (req, res) => {
   try {
-    // req.files contiene la info subida con multer-storage-cloudinary
-    const imagenes = req.files.map(file => file.path); // URLs Cloudinary
+    const imagenes = req.files.map(file => file.path);
 
     const { nombre, descripcion, precio, ubicacion } = req.body;
 
@@ -110,8 +109,7 @@ const eliminarPaquete = async (req, res) => {
 
 
 const agregarReseña = async (req, res) => {
-  // res.json({ msg: "Ruta de reseñas encontrada correctamente" }); // ❌ QUITA ESTO
-
+  
   const { id } = req.params;
   const { comentario, calificacion } = req.body;
   const usuario = req.usuario?._id;

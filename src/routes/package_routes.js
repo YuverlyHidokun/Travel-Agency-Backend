@@ -28,6 +28,4 @@ router.get("/:id", obtenerPaquetePorId);
 router.put("/:id", verificarAuth, actualizarPaquete);
 router.delete("/:id", verificarAuth, eliminarPaquete);
 
-console.log("📦 RUTAS DE PAQUETES CARGADAS");
-
 export default router;
