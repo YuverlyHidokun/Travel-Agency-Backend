@@ -1,11 +1,32 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, model } from "mongoose";
 
-const reservationSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  travelPackage: { type: mongoose.Schema.Types.ObjectId, ref: "Package" },
-  passengers: Number,
-  travelDate: Date,
-  status: { type: String, enum: ["confirmada", "cancelada", "pendiente"], default: "confirmada" },
-}, { timestamps: true });
+const reservaSchema = new Schema({
+  usuario: {
+    type: Schema.Types.ObjectId,
+    ref: "Usuario",
+    required: true
+  },
+  paquete: {
+    type: Schema.Types.ObjectId,
+    ref: "Paquete",
+    required: true
+  },
+  pasajeros: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  fechaViaje: {
+    type: Date,
+    required: true
+  },
+  estado: {
+    type: String,
+    enum: ["confirmada", "cancelada", "pendiente"],
+    default: "confirmada"
+  }
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model("Reservation", reservationSchema);
+export default model("Reserva", reservaSchema);

@@ -3,6 +3,7 @@ import cors from "cors";
 
 import userRoutes from "./routes/user_routes.js";
 import paqueteRoutes from "./routes/package_routes.js";
+import reservaRoutes from "./routes/reservation_routes.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 // Rutas
 app.use("/travel/usuarios", userRoutes);
 app.use("/travel/paquetes", paqueteRoutes);
+app.use("/travel/reservas", reservaRoutes);
 
 // Ruta 404 para endpoints no encontrados
 app.use((req, res) => res.status(404).send("🚫 Endpoint no encontrado - 404"));
