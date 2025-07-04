@@ -5,7 +5,8 @@ import {
   obtenerPaquetePorId,
   actualizarPaquete,
   eliminarPaquete,
-  agregarReseña
+  agregarReseña,
+  buscarPaquetes
 } from "../controller/package_controller.js";
 import verificarAuth  from "../middlewares/authMiddleware.js";
 import parser from "../config/multer.js";
