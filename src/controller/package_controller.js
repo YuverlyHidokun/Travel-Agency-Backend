@@ -5,18 +5,37 @@ const crearPaquete = async (req, res) => {
   try {
     const imagenes = req.files.map(file => file.path);
 
-    const { nombre, descripcion, precio, ubicacion } = req.body;
+    const {
+      nombre,
+      descripcion,
+      precio,
+      ubicacion,
+      origen,
+      destino,
+      tipo,
+      clase,
+      maxPasajeros
+    } = req.body;
 
-    if ([nombre, descripcion, precio, ubicacion].includes("") || imagenes.length === 0) {
+    // Validación básica
+    if (
+      [nombre, descripcion, precio, ubicacion, origen, destino, tipo].includes("") ||
+      imagenes.length === 0
+    ) {
       return res.status(400).json({ msg: "Todos los campos son obligatorios y al menos una imagen debe ser cargada." });
     }
 
     const nuevoPaquete = new Paquete({
       nombre,
       descripcion,
-      imagenes,
       precio,
-      ubicacion
+      ubicacion,
+      origen,
+      destino,
+      tipo,
+      clase: clase || "Económica",
+      maxPasajeros: maxPasajeros || 10,
+      imagenes
     });
 
     await nuevoPaquete.save();
@@ -139,6 +158,23 @@ const agregarReseña = async (req, res) => {
   }
 };
 
+const buscarPaquetes = async (req, res) => {
+  try {
+    const { tipo, origen, destino, clase, pasajeros } = req.query;
+
+    const filtros = {};
+
+    if (origen) filtros.ubicacion = { $regex: origen, $options: 'i' };
+    if (destino) filtros.descripcion = { $regex: destino, $options: 'i' };
+    if (tipo) filtros.nombre = { $regex: tipo, $options: 'i' };
+    // Puedes agregar más lógica con clase y pasajeros si hay campos para eso
+
+    const paquetes = await Paquete.find(filtros).sort({ createdAt: -1 });
+    res.status(200).json(paquetes);
+  } catch (error) {
+    res.status(500).json({ msg: "Error al buscar paquetes", error });
+  }
+};
 
 export {
   crearPaquete,
@@ -146,5 +182,6 @@ export {
   obtenerPaquetePorId,
   actualizarPaquete,
   eliminarPaquete,
-  agregarReseña
+  agregarReseña,
+  buscarPaquetes
 };

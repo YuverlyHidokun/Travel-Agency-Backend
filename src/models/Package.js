@@ -8,14 +8,14 @@ const packageSchema = new Schema({
   },
   descripcion: {
     type: String,
-    required: true // Puedes agregar maxlength si deseas limitarlo, o dejarlo libre para "texto largo"
+    required: true
   },
   imagenes: [
     {
       type: String,
       required: true
     }
-  ], // URLs en Cloudinary
+  ],
   precio: {
     type: Number,
     required: true
@@ -23,6 +23,26 @@ const packageSchema = new Schema({
   ubicacion: {
     type: String,
     required: true
+  },
+  origen: {
+    type: String,
+    required: true
+  },
+  destino: {
+    type: String,
+    required: true
+  },
+  tipo: {
+    type: String, // ejemplo: "Aventura", "Relax", "Cultural"
+    required: true
+  },
+  clase: {
+    type: String, // ejemplo: "Económica", "Premium", etc.
+    default: "Económica"
+  },
+  maxPasajeros: {
+    type: Number,
+    default: 10
   },
   calificacion: {
     type: Number,
@@ -48,5 +68,6 @@ const packageSchema = new Schema({
 }, {
   timestamps: true
 });
+
 
 export default model("Paquete", packageSchema);
