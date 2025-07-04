@@ -22,8 +22,12 @@ router.post("/", verificarAuth, parser.array("imagen", 5), crearPaquete);
 
 router.post("/:id/resenas", verificarAuth, agregarReseña);
 
+
+
+
 // Las demás rutas…
 router.get("/", obtenerPaquetes);
+router.get("/buscar", buscarPaquetes);
 router.get("/:id", obtenerPaquetePorId);
 router.put("/:id", verificarAuth, actualizarPaquete);
 router.delete("/:id", verificarAuth, eliminarPaquete);
