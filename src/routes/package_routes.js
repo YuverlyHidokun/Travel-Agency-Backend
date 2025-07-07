@@ -21,16 +21,21 @@ router.use((req, res, next) => {
 // Crear nuevo paquete con subida de imágenes (protegido)
 router.post("/", verificarAuth, parser.array("imagen", 5), crearPaquete);
 
+// Agregar reseña
 router.post("/:id/resenas", verificarAuth, agregarReseña);
 
-
-
-
-// Las demás rutas…
-router.get("/", obtenerPaquetes);
+// Buscar paquetes (esta debe ir antes que "/:id")
 router.get("/buscar", buscarPaquetes);
+
+// Obtener todos los paquetes
+router.get("/", obtenerPaquetes);
+
+// Obtener un paquete por ID (esta debe ir después)
 router.get("/:id", obtenerPaquetePorId);
+
+// Actualizar y eliminar paquete
 router.put("/:id", verificarAuth, actualizarPaquete);
 router.delete("/:id", verificarAuth, eliminarPaquete);
+
 
 export default router;
