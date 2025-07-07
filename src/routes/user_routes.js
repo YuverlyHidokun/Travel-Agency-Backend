@@ -6,12 +6,17 @@ import {
     recuperarPassword,
     comprobarTokenPasword,
     nuevoPassword,
-    actualizarPassword
+    actualizarPassword,
+    obtenerPerfil,
+    actualizarPerfil,
+    actualizarImagenPerfil
 } from "../controller/user_controller.js";
+import verificarAuth  from "../middlewares/authMiddleware.js";
+import parser from "../config/multer.js";
 
 const router = express.Router();
 
-router.post("/registro", registro);
+router.post("/registro", parser.single("imagen"), registro);
 router.post("/login", login);
 
 router.get("/verificar/:token", verificarCuenta);
@@ -26,6 +31,11 @@ router.get("/recuperar-password/:token", comprobarTokenPasword);
 router.post("/recuperar-password/:token", nuevoPassword);
 
 router.post("/actualizar-password", actualizarPassword);
+
+router.get("/perfil", verificarAuth, obtenerPerfil);
+router.put("/perfil", verificarAuth, actualizarPerfil);
+
+router.put("/actualizar-foto", verificarAuth, parser.single("imagen"), actualizarImagenPerfil);
 
 
 export default router;

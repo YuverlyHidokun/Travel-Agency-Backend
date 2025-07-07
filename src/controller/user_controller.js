@@ -19,13 +19,19 @@ const registro = async (req, res) => {
     return res.status(400).json({ msg: "Este email ya está registrado" });
   }
 
-    const nuevoUsuario = new Usuario({
-      nombre,
-      apellido,
-      numero,
-      email,
-      password
+  const nuevoUsuario = new Usuario({
+    nombre,
+    apellido,
+    numero,
+    email,
+    password
   });
+
+  // Si hay imagen cargada
+  if (req.file) {
+    nuevoUsuario.imagenUrl = req.file.path;
+    nuevoUsuario.imagenPublicId = req.file.filename;
+  }
 
   const tokenGenerado = nuevoUsuario.generarToken();
   nuevoUsuario.token = tokenGenerado;
@@ -154,6 +160,67 @@ const actualizarPassword = async (req, res) => {
   res.status(200).json({ msg: "Contraseña actualizada correctamente" });
 };
 
+const obtenerPerfil = (req, res) => {
+  const usuario = req.usuario;
+  res.json(usuario);
+};
+
+const actualizarPerfil = async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.usuario._id);
+    if (!usuario) {
+      return res.status(404).json({ msg: "Usuario no encontrado" });
+    }
+
+    const { nombre, apellido, numero, email } = req.body;
+
+    usuario.nombre = nombre || usuario.nombre;
+    usuario.apellido = apellido || usuario.apellido;
+    usuario.numero = numero || usuario.numero;
+    usuario.email = email || usuario.email;
+
+    await usuario.save();
+    res.json({ msg: "Perfil actualizado", usuario });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Error al actualizar el perfil" });
+  }
+};
+
+const actualizarImagenPerfil = async (req, res) => {
+  const usuarioId = req.usuario._id;
+
+  try {
+    const usuario = await Usuario.findById(usuarioId);
+    if (!usuario) {
+      return res.status(404).json({ msg: "Usuario no encontrado" });
+    }
+
+    // Eliminar la anterior imagen si existe
+    if (usuario.imagenPublicId) {
+      await cloudinary.uploader.destroy(usuario.imagenPublicId);
+    }
+
+    // Subir nueva
+    const file = req.file;
+    usuario.imagenUrl = file.path;
+    usuario.imagenPublicId = file.filename;
+
+    await usuario.save();
+
+    res.status(200).json({
+      msg: "Imagen de perfil actualizada correctamente",
+      usuario: {
+        nombre: usuario.nombre,
+        imagenUrl: usuario.imagenUrl
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Error al actualizar imagen de perfil" });
+  }
+};
+
 export {
   registro,
   login,
@@ -161,5 +228,8 @@ export {
   recuperarPassword,
   comprobarTokenPasword,
   nuevoPassword,
-  actualizarPassword
+  actualizarPassword,
+  obtenerPerfil,
+  actualizarPerfil,
+  actualizarImagenPerfil
 };
