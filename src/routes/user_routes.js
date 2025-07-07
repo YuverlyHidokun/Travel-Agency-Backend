@@ -33,7 +33,7 @@ router.post("/recuperar-password/:token", nuevoPassword);
 router.post("/actualizar-password", actualizarPassword);
 
 router.get("/perfil", verificarAuth, obtenerPerfil);
-router.put("/perfil", verificarAuth, actualizarPerfil);
+router.put('/perfil', verificarAuth, parser.single('imagen'), actualizarPerfil);
 
 router.put("/actualizar-foto", verificarAuth, parser.single("imagen"), actualizarImagenPerfil);
 
