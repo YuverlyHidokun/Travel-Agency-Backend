@@ -1,7 +1,7 @@
 import Usuario from "../models/User.js";
 import { sendMailToRegister, sendMailToRecoveryPassword } from "../config/nodemailer.js";
 import generarJWT from "../utils/generateToken.js";
-
+import { v2 as cloudinary } from 'cloudinary';
 
 const registro = async (req, res) => {
   const { nombre, apellido, numero, email, password, acepta_terminos } = req.body;
