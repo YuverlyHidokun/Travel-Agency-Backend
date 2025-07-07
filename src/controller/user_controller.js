@@ -203,8 +203,13 @@ const actualizarImagenPerfil = async (req, res) => {
 
     // Subir nueva
     const file = req.file;
-    usuario.imagenUrl = file.path;
-    usuario.imagenPublicId = file.filename;
+
+    if (!file || !file.path && !file.secure_url) {
+      return res.status(400).json({ msg: "No se recibió ninguna imagen válida" });
+    }
+
+    usuario.imagenUrl = file.path || file.secure_url;
+    usuario.imagenPublicId = file.filename || file.public_id;
 
     await usuario.save();
 
@@ -215,6 +220,8 @@ const actualizarImagenPerfil = async (req, res) => {
         imagenUrl: usuario.imagenUrl
       }
     });
+
+    console.log("Archivo recibido:", file);
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "Error al actualizar imagen de perfil" });
