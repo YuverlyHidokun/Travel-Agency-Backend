@@ -164,10 +164,11 @@ const buscarPaquetes = async (req, res) => {
 
     const filtros = {};
 
-    if (origen) filtros.ubicacion = { $regex: origen, $options: 'i' };
-    if (destino) filtros.descripcion = { $regex: destino, $options: 'i' };
-    if (tipo) filtros.nombre = { $regex: tipo, $options: 'i' };
-    // Puedes agregar más lógica con clase y pasajeros si hay campos para eso
+    if (origen) filtros.origen = { $regex: origen, $options: 'i' };
+    if (destino) filtros.destino = { $regex: destino, $options: 'i' };
+    if (tipo) filtros.tipo = { $regex: tipo, $options: 'i' };
+    if (clase) filtros.clase = { $regex: clase, $options: 'i' };
+    if (pasajeros) filtros.maxPasajeros = { $gte: parseInt(pasajeros) };
 
     const paquetes = await Paquete.find(filtros).sort({ createdAt: -1 });
     res.status(200).json(paquetes);
