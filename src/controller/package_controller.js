@@ -82,7 +82,17 @@ const obtenerPaquetePorId = async (req, res) => {
 // Actualizar un paquete
 const actualizarPaquete = async (req, res) => {
   const { id } = req.params;
-  const { nombre, descripcion, imagenes, precio, ubicacion } = req.body;
+  const {
+    nombre,
+    descripcion,
+    precio,
+    ubicacion,
+    origen,
+    destino,
+    tipo,
+    clase,
+    maxPasajeros
+  } = req.body;
 
   try {
     const paquete = await Paquete.findById(id);
@@ -90,11 +100,21 @@ const actualizarPaquete = async (req, res) => {
       return res.status(404).json({ msg: "Paquete no encontrado" });
     }
 
-    paquete.nombre = nombre || paquete.nombre;
-    paquete.descripcion = descripcion || paquete.descripcion;
-    paquete.imagenes = imagenes || paquete.imagenes;
-    paquete.precio = precio || paquete.precio;
-    paquete.ubicacion = ubicacion || paquete.ubicacion;
+    // Actualizar campos si vienen
+    if (nombre) paquete.nombre = nombre;
+    if (descripcion) paquete.descripcion = descripcion;
+    if (precio) paquete.precio = precio;
+    if (ubicacion) paquete.ubicacion = ubicacion;
+    if (origen) paquete.origen = origen;
+    if (destino) paquete.destino = destino;
+    if (tipo) paquete.tipo = tipo;
+    if (clase) paquete.clase = clase;
+    if (maxPasajeros) paquete.maxPasajeros = maxPasajeros;
+
+    // Actualizar imágenes si se enviaron nuevas
+    if (req.files && req.files.length > 0) {
+      paquete.imagenes = req.files.map(file => file.filename);
+    }
 
     await paquete.save();
 
@@ -103,9 +123,11 @@ const actualizarPaquete = async (req, res) => {
       paquete
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ msg: "Error al actualizar el paquete", error });
   }
 };
+
 
 // Eliminar un paquete
 const eliminarPaquete = async (req, res) => {

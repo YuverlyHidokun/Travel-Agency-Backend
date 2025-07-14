@@ -34,7 +34,8 @@ router.get("/", obtenerPaquetes);
 router.get("/:id", obtenerPaquetePorId);
 
 // Actualizar y eliminar paquete
-router.put("/:id", verificarAuth, actualizarPaquete);
+// Actualizar paquete con imágenes (protegido)
+router.put("/:id", verificarAuth, parser.array("imagen", 5), actualizarPaquete);
 router.delete("/:id", verificarAuth, eliminarPaquete);
 
 
