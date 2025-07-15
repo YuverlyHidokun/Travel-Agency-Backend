@@ -209,7 +209,7 @@ const eliminarReseña = async (req, res) => {
     }
 
     // Verificar si la reseña existe
-    const resenaExistente = paquete.reseñas.id(idResena);
+    const resenaExistente = paquete.resenas.id(idResena);
     if (!resenaExistente) {
       return res.status(404).json({ msg: "Reseña no encontrada" });
     }
@@ -218,9 +218,9 @@ const eliminarReseña = async (req, res) => {
     resenaExistente.deleteOne();
 
     // Recalcular calificación promedio
-    const total = paquete.reseñas.reduce((acc, item) => acc + item.calificacion, 0);
-    paquete.calificacion = paquete.reseñas.length
-      ? total / paquete.reseñas.length
+    const total = paquete.resenas.reduce((acc, item) => acc + item.calificacion, 0);
+    paquete.calificacion = paquete.resenas.length
+      ? total / paquete.resenas.length
       : 0;
 
     await paquete.save();

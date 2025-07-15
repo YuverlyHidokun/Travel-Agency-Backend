@@ -48,7 +48,7 @@ const packageSchema = new Schema({
     type: Number,
     default: 0
   },
-  reseñas: [
+  resenas: [
     {
       usuario: {
         type: mongoose.Schema.Types.ObjectId,
