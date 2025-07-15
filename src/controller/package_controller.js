@@ -67,7 +67,7 @@ const obtenerPaquetePorId = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const paquete = await Paquete.findById(id).populate("reseñas.usuario", "nombre email");
+    const paquete = await Paquete.findById(id).populate("resenas.usuario", "nombre email");
 
     if (!paquete) {
       return res.status(404).json({ msg: "Paquete no encontrado" });
@@ -75,9 +75,11 @@ const obtenerPaquetePorId = async (req, res) => {
 
     res.status(200).json(paquete);
   } catch (error) {
+    console.error("Error al obtener paquete por ID:", error); // ← ayuda en producción
     res.status(500).json({ msg: "Error al obtener el paquete", error });
   }
 };
+
 
 // Actualizar un paquete
 const actualizarPaquete = async (req, res) => {
