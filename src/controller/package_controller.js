@@ -167,11 +167,11 @@ const agregarReseña = async (req, res) => {
       return res.status(404).json({ msg: "Paquete no encontrado" });
     }
 
-    paquete.reseñas.push({ usuario, comentario, calificacion });
+    paquete.resenas.push({ usuario, comentario, calificacion });
 
     // Calcular nuevo promedio
-    const total = paquete.reseñas.reduce((acc, item) => acc + item.calificacion, 0);
-    paquete.calificacion = total / paquete.reseñas.length;
+    const total = paquete.resenas.reduce((acc, item) => acc + item.calificacion, 0);
+    paquete.calificacion = total / paquete.resenas.length;
 
     await paquete.save();
 
