@@ -6,6 +6,8 @@ import paqueteRoutes from "./routes/package_routes.js";
 import reservaRoutes from "./routes/reservation_routes.js";
 
 import dotenv from "dotenv";
+import statsRoutes from "./routes/stats_routes.js";
+
 dotenv.config();
 
 const app = express();
@@ -26,6 +28,8 @@ app.get("/", (req, res) => {
 app.use("/travel/usuarios", userRoutes);
 app.use("/travel/paquetes", paqueteRoutes);
 app.use("/travel/reservas", reservaRoutes);
+app.use("/travel/estadisticas", statsRoutes);
+
 
 // Ruta 404 para endpoints no encontrados
 app.use((req, res) => res.status(404).send("🚫 Endpoint no encontrado - 404"));
