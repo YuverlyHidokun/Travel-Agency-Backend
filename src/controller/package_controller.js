@@ -203,42 +203,35 @@ const eliminarReseña = async (req, res) => {
   const { idPaquete, idResena } = req.params;
 
   try {
-    const paquete = await Paquete.findById(idPaquete).populate("reseñas.usuario");
-
+    const paquete = await Paquete.findById(idPaquete);
     if (!paquete) {
       return res.status(404).json({ msg: "Paquete no encontrado" });
     }
 
-    const reseña = paquete.reseñas.id(idResena);
-    if (!reseña) {
+    // Verificar si la reseña existe
+    const resenaExistente = paquete.reseñas.id(idResena);
+    if (!resenaExistente) {
       return res.status(404).json({ msg: "Reseña no encontrada" });
     }
 
-    // Obtener el usuario de la reseña (para notificación)
-    const usuarioResena = await Usuario.findById(reseña.usuario);
+    // Eliminar reseña
+    resenaExistente.deleteOne();
 
-    if (!usuarioResena) {
-      return res.status(404).json({ msg: "Usuario de la reseña no encontrado" });
-    }
-
-    // Eliminar la reseña
-    reseña.deleteOne();
-
-    // Recalcular calificación del paquete
+    // Recalcular calificación promedio
     const total = paquete.reseñas.reduce((acc, item) => acc + item.calificacion, 0);
-    paquete.calificacion = paquete.reseñas.length ? (total / paquete.reseñas.length) : 0;
+    paquete.calificacion = paquete.reseñas.length
+      ? total / paquete.reseñas.length
+      : 0;
 
     await paquete.save();
 
-    // Simulación de notificación por consola (WhatsApp real se puede integrar con Twilio)
-    console.log(`Notificación: Comentario de ${usuarioResena.nombre} eliminado. Teléfono: ${usuarioResena.numero}`);
-
-    return res.status(200).json({ msg: "Reseña eliminada y usuario notificado", paquete });
+    res.json({ msg: "Reseña eliminada correctamente", paquete });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ msg: "Error al eliminar reseña" });
+    console.error("❌ Error en eliminarReseña:", error);
+    res.status(500).json({ msg: "Error interno al eliminar la reseña", error });
   }
 };
+
 
 
 export {
