@@ -7,7 +7,7 @@ import {
   eliminarPaquete,
   agregarReseña,
   buscarPaquetes,
-  eliminarReseña
+  eliminarResena
 } from "../controller/package_controller.js";
 import verificarAuth  from "../middlewares/authMiddleware.js";
 import parser from "../config/multer.js";
@@ -25,7 +25,7 @@ router.post("/", verificarAuth, parser.array("imagen", 5), crearPaquete);
 // Agregar reseña
 router.post("/:id/resenas", verificarAuth, agregarReseña);
 
-router.delete('/:idPaquete/resenas/:idResena', verificarAuth, eliminarReseña);
+router.delete('/:idPaquete/resenas/:idResena', verificarAuth, eliminarResena);
 
 
 // Buscar paquetes (esta debe ir antes que "/:id")

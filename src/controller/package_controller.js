@@ -199,7 +199,7 @@ const buscarPaquetes = async (req, res) => {
   }
 };
 
-const eliminarReseña = async (req, res) => {
+const eliminarResena = async (req, res) => {
   const { idPaquete, idResena } = req.params;
 
   try {
@@ -227,7 +227,7 @@ const eliminarReseña = async (req, res) => {
 
     res.json({ msg: "Reseña eliminada correctamente", paquete });
   } catch (error) {
-    console.error("❌ Error en eliminarReseña:", error);
+    console.error("❌ Error en eliminarResena:", error);
     res.status(500).json({ msg: "Error interno al eliminar la reseña", error });
   }
 };
@@ -242,5 +242,5 @@ export {
   eliminarPaquete,
   agregarReseña,
   buscarPaquetes,
-  eliminarReseña
+  eliminarResena
 };
