@@ -80,7 +80,6 @@ const login = async (req, res) => {
   });
 };
 
-
 const verificarCuenta = async (req, res) => {
   const { token } = req.params;
   console.log("🔍 Token recibido para verificar:", token);
@@ -90,7 +89,7 @@ const verificarCuenta = async (req, res) => {
 
     if (!usuario) {
       console.log("❌ Token no encontrado o expirado");
-      return res.status(404).json({ msg: "Token inválido o expirado" });
+      return res.redirect(`${process.env.URL_FRONTEND}login?verified=false`);
     }
 
     console.log("✅ Usuario encontrado:", usuario.email);
@@ -100,12 +99,15 @@ const verificarCuenta = async (req, res) => {
     await usuario.save();
 
     console.log("✅ Cuenta verificada para:", usuario.email);
-    return res.status(200).json({ msg: "Cuenta verificada correctamente. Ya puedes iniciar sesión." });
+    return res.redirect(`${process.env.URL_FRONTEND}login?verified=true`);
+
   } catch (error) {
     console.error("🔥 Error en verificación:", error);
-    return res.status(500).json({ msg: "Error en el servidor" });
+    return res.redirect(`${process.env.URL_FRONTEND}login?verified=error`);
   }
 };
+
+
 
 
 // Recuperar contraseña por olvido

@@ -1,18 +1,25 @@
 import nodemailer from "nodemailer";
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from 'dotenv';
+dotenv.config();
 
+// Transportador de correos
 let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    host: process.env.HOST_MAILTRAP,
-    port: process.env.PORT_MAILTRAP,
-    auth: {
-        user: process.env.USER_MAILTRAP,
-        pass: process.env.PASS_MAILTRAP,
-    }
+  service: 'gmail',
+  host: process.env.HOST_MAILTRAP,
+  port: process.env.PORT_MAILTRAP,
+  auth: {
+    user: process.env.USER_MAILTRAP,
+    pass: process.env.PASS_MAILTRAP,
+  }
 });
 
+// ENV: Añade esta variable si no la tienes
+// URL_BACKEND=https://travel-agency-backend-dn6i.onrender.com/
+
 export const sendMailToRegister = (userMail, token) => {
+  const backendUrl = process.env.URL_BACKEND?.replace(/\/$/, ""); // sin / final
+  const verifyUrl = `${backendUrl}/travel/usuarios/verificar/${encodeURIComponent(token)}`;
+
   const mailOptions = {
     from: `"Travel Agency" <${process.env.USER_MAILTRAP}>`,
     to: userMail,
@@ -24,7 +31,7 @@ export const sendMailToRegister = (userMail, token) => {
           Gracias por registrarte. Para activar tu cuenta, haz clic en el siguiente botón:
         </p>
         <p style="text-align: center; margin: 30px;">
-          <a href="${process.env.URL_FRONTEND}travel/usuarios/verificar/${encodeURIComponent(token)}"
+          <a href="${verifyUrl}"
              style="background-color: #1abc9c; color: white; text-decoration: none; padding: 12px 20px; border-radius: 5px; font-weight: bold;">
             Verificar mi cuenta
           </a>
@@ -50,6 +57,9 @@ export const sendMailToRegister = (userMail, token) => {
 };
 
 export const sendMailToRecoveryPassword = async (email, token) => {
+  const frontendUrl = process.env.URL_FRONTEND?.replace(/\/$/, "");
+  const resetUrl = `${frontendUrl}/travel/usuarios/reset-password/${encodeURIComponent(token)}`;
+
   const info = await transporter.sendMail({
     from: `"Travel Agency" <${process.env.USER_MAILTRAP}>`,
     to: email,
@@ -61,7 +71,7 @@ export const sendMailToRecoveryPassword = async (email, token) => {
           Recibimos una solicitud para restablecer tu contraseña. Para continuar, haz clic en el siguiente botón:
         </p>
         <p style="text-align: center; margin: 30px;">
-          <a href="${process.env.URL_FRONTEND}travel/usuarios/reset-password/${encodeURIComponent(token)}"
+          <a href="${resetUrl}"
              style="background-color: #e67e22; color: white; text-decoration: none; padding: 12px 20px; border-radius: 5px; font-weight: bold;">
             Restablecer contraseña
           </a>
