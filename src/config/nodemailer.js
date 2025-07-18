@@ -24,7 +24,7 @@ export const sendMailToRegister = (userMail, token) => {
           Gracias por registrarte. Para activar tu cuenta, haz clic en el siguiente botón:
         </p>
         <p style="text-align: center; margin: 30px;">
-          <a href="${process.env.URL_FRONTEND}travel/verificar/${encodeURIComponent(token)}"
+          <a href="${process.env.URL_FRONTEND}travel/usuarios/verificar/${encodeURIComponent(token)}"
              style="background-color: #1abc9c; color: white; text-decoration: none; padding: 12px 20px; border-radius: 5px; font-weight: bold;">
             Verificar mi cuenta
           </a>
@@ -61,7 +61,7 @@ export const sendMailToRecoveryPassword = async (email, token) => {
           Recibimos una solicitud para restablecer tu contraseña. Para continuar, haz clic en el siguiente botón:
         </p>
         <p style="text-align: center; margin: 30px;">
-          <a href="${process.env.URL_FRONTEND}travel/reset-password/${encodeURIComponent(token)}"
+          <a href="${process.env.URL_FRONTEND}travel/usuarios/reset-password/${encodeURIComponent(token)}"
              style="background-color: #e67e22; color: white; text-decoration: none; padding: 12px 20px; border-radius: 5px; font-weight: bold;">
             Restablecer contraseña
           </a>
