@@ -83,21 +83,28 @@ const login = async (req, res) => {
 
 const verificarCuenta = async (req, res) => {
   const { token } = req.params;
-  console.log("Token recibido:", token); // Agregado
+  console.log("🔍 Token recibido para verificar:", token);
 
-  const usuario = await Usuario.findOne({ token });
+  try {
+    const usuario = await Usuario.findOne({ token });
 
-  if (!usuario) {
-    console.log("Token no válido o expirado"); // Agregado
-    return res.status(404).json({ msg: "Token inválido o expirado" });
+    if (!usuario) {
+      console.log("❌ Token no encontrado o expirado");
+      return res.status(404).json({ msg: "Token inválido o expirado" });
+    }
+
+    console.log("✅ Usuario encontrado:", usuario.email);
+
+    usuario.confirmEmail = true;
+    usuario.token = null;
+    await usuario.save();
+
+    console.log("✅ Cuenta verificada para:", usuario.email);
+    return res.status(200).json({ msg: "Cuenta verificada correctamente. Ya puedes iniciar sesión." });
+  } catch (error) {
+    console.error("🔥 Error en verificación:", error);
+    return res.status(500).json({ msg: "Error en el servidor" });
   }
-
-  usuario.confirmEmail = true;
-  usuario.token = null;
-  await usuario.save();
-
-  console.log("Cuenta verificada con éxito"); // Agregado
-  res.status(200).json({ msg: "Cuenta verificada correctamente. Ya puedes iniciar sesión." });
 };
 
 
