@@ -83,10 +83,12 @@ const login = async (req, res) => {
 
 const verificarCuenta = async (req, res) => {
   const { token } = req.params;
+  console.log("Token recibido:", token); // Agregado
 
   const usuario = await Usuario.findOne({ token });
 
   if (!usuario) {
+    console.log("Token no válido o expirado"); // Agregado
     return res.status(404).json({ msg: "Token inválido o expirado" });
   }
 
@@ -94,8 +96,10 @@ const verificarCuenta = async (req, res) => {
   usuario.token = null;
   await usuario.save();
 
+  console.log("Cuenta verificada con éxito"); // Agregado
   res.status(200).json({ msg: "Cuenta verificada correctamente. Ya puedes iniciar sesión." });
 };
+
 
 // Recuperar contraseña por olvido
 const recuperarPassword = async (req, res) => {
