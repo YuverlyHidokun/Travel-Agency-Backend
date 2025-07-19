@@ -140,7 +140,7 @@ const comprobarTokenPasword = async (req, res) => {
   }
 
   // Token válido, redirigir al frontend con token y valid=true
-  return res.redirect(`${process.env.URL_FRONTEND}reset-password?token=${encodeURIComponent(token)}&valid=true`);
+  return res.redirect(`${process.env.URL_FRONTEND}recuperar-password?token=${encodeURIComponent(token)}&valid=true`);
 };
 
 
