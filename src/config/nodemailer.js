@@ -58,7 +58,8 @@ export const sendMailToRegister = (userMail, token) => {
 
 export const sendMailToRecoveryPassword = async (email, token) => {
   const frontendUrl = process.env.URL_FRONTEND?.replace(/\/$/, "");
-  const resetUrl = `${frontendUrl}/travel/usuarios/recuperar-password/${encodeURIComponent(token)}`;
+  // Cambiado aquí:
+  const resetUrl = `${frontendUrl}/recuperar-password?token=${encodeURIComponent(token)}&valid=true`;
 
   const info = await transporter.sendMail({
     from: `"Travel Agency" <${process.env.USER_MAILTRAP}>`,
