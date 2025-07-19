@@ -135,14 +135,14 @@ const comprobarTokenPasword = async (req, res) => {
   }
 
   const propietarioBDD = await Usuario.findOne({ token });
-
   if (!propietarioBDD || propietarioBDD.token !== token) {
     return res.redirect(`${process.env.URL_FRONTEND}login?reset=invalid`);
   }
 
-  // Token válido, redirigir a la página de reset con token en query param
+  // Token válido, redirigir al frontend con token y valid=true
   return res.redirect(`${process.env.URL_FRONTEND}reset-password?token=${encodeURIComponent(token)}&valid=true`);
 };
+
 
 const nuevoPassword = async (req, res) => {
   const { password, confirmpassword } = req.body;
