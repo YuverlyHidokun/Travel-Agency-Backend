@@ -129,12 +129,19 @@ const recuperarPassword = async (req, res) => {
 
 const comprobarTokenPasword = async (req, res) => {
   const { token } = req.params;
-  if (!token) return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
+
+  if (!token) {
+    return res.redirect(`${process.env.URL_FRONTEND}login?reset=invalid`);
+  }
 
   const propietarioBDD = await Usuario.findOne({ token });
-  if (!propietarioBDD || propietarioBDD.token !== token) return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
 
-  res.status(200).json({ msg: "Hemos verificado tu correo, por favor rellena los campos para tu nueva contraseña" });
+  if (!propietarioBDD || propietarioBDD.token !== token) {
+    return res.redirect(`${process.env.URL_FRONTEND}login?reset=invalid`);
+  }
+
+  // Token válido, redirigir a la página de reset con token en query param
+  return res.redirect(`${process.env.URL_FRONTEND}reset-password?token=${encodeURIComponent(token)}&valid=true`);
 };
 
 const nuevoPassword = async (req, res) => {
